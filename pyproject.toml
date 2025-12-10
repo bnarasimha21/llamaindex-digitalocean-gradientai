@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "LlamaIndex integration for DigitalOcean Gradient AI"
 readme = "README.md"
 requires-python = ">=3.8"
-license = {text = "MIT"}
+license = "MIT"
 license-files = ["LICENSE"]
 authors = [
     {name = "Narasimha Badrinath", email = "bnarasimha21@gmail.com"},
@@ -17,7 +17,6 @@ keywords = ["llamaindex", "gradient", "gradientai", "llm", "rag", "digitalocean"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
