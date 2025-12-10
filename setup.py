@@ -8,12 +8,12 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name="llama-index-llms-digitalocean-gradientai",
     version="0.1.0",
-    author="Your Name",
-    author_email="your.email@example.com",
+    author="Narasimha Badrinath",
+    author_email="bnarasimha21@gmail.com",
     description="LlamaIndex integration for DigitalOcean Gradient AI",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/llama-index-llms-digitalocean-gradientai",
+    url="https://github.com/bnarasimha21/llamaindex-digitalocean-gradientai",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
