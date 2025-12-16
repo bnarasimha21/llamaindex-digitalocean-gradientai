@@ -42,7 +42,7 @@ class DigitalOceanGradientAILLM(CustomLLM):
     def __init__(
         self,
         model: str,
-        model_access_key: Optional[str] = None,
+        model_access_key: str,
         workspace_id: Optional[str] = None,
         base_url: Optional[str] = None,
         temperature: float = 0.7,
@@ -53,19 +53,12 @@ class DigitalOceanGradientAILLM(CustomLLM):
         timeout: float = 60.0,
         **kwargs: Any,
     ) -> None:
-        model_access_key = (
-            model_access_key
-            or os.getenv("MODEL_ACCESS_KEY")
-            or os.getenv("GRADIENT_MODEL_ACCESS_KEY")
-            or os.getenv("GRADIENT_API_KEY")
-        )
-        workspace_id = workspace_id or os.getenv("GRADIENT_WORKSPACE_ID")
-
+        # Users must explicitly supply the model access key; we do not read it from
+        # environment variables to avoid accidental misconfiguration.
         if not model_access_key:
-            raise ValueError(
-                "Model access key required. Set MODEL_ACCESS_KEY (preferred), "
-                "GRADIENT_MODEL_ACCESS_KEY, GRADIENT_API_KEY, or pass model_access_key."
-            )
+            raise ValueError("model_access_key is required and must be provided explicitly.")
+
+        workspace_id = workspace_id or os.getenv("GRADIENT_WORKSPACE_ID")
 
         super().__init__(
             model=model,

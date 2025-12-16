@@ -1,6 +1,6 @@
 # llama-index-llms-digitalocean-gradientai
 
-LlamaIndex integration for DigitalOcean Gradient AI LLM.
+LlamaIndex integration for DigitalOcean Gradient AI.
 
 ## Installation
 
@@ -10,14 +10,6 @@ pip install llama-index-llms-digitalocean-gradientai
 
 This package uses the official [gradient](https://github.com/digitalocean/gradient-python) SDK (PyPI package: `gradient`) under the hood; it is installed automatically as a dependency.
 
-Or install from source:
-
-```bash
-git clone https://github.com/yourusername/llama-index-llms-digitalocean-gradientai
-cd llama-index-llms-digitalocean-gradientai
-pip install -e .
-```
-
 ## Usage
 
 ### Basic Usage
@@ -26,7 +18,7 @@ pip install -e .
 from llama_index.llms.digitalocean.gradientai import DigitalOceanGradientAILLM
 
 llm = DigitalOceanGradientAILLM(
-    model="meta-llama-3-70b-instruct",
+    model="openai-gpt-oss-120b",
     api_key="your-api-key",
     workspace_id="your-workspace-id"
 )
@@ -35,20 +27,6 @@ response = llm.complete("What is DigitalOcean Gradient?")
 print(response)
 ```
 
-### Using Environment Variables
-
-```python
-import os
-from llama_index.llms.digitalocean.gradientai import DigitalOceanGradientAILLM
-
-os.environ["GRADIENT_API_KEY"] = "your-api-key"
-os.environ["GRADIENT_WORKSPACE_ID"] = "your-workspace-id"
-
-llm = DigitalOceanGradientAILLM(model="meta-llama-3-70b-instruct")
-```
-
-You can also use `GRADIENT_MODEL_ACCESS_KEY` (recommended) in place of `GRADIENT_API_KEY`.
-
 ### Chat Interface
 
 ```python
@@ -56,14 +34,14 @@ from llama_index.core.llms import ChatMessage
 from llama_index.llms.digitalocean.gradientai import DigitalOceanGradientAILLM
 
 llm = DigitalOceanGradientAILLM(
-    model="meta-llama-3-70b-instruct",
+    model="openai-gpt-oss-120b",
     api_key="your-api-key",
     workspace_id="your-workspace-id"
 )
 
 messages = [
     ChatMessage(role="system", content="You are a helpful assistant."),
-    ChatMessage(role="user", content="What is Gradient?")
+    ChatMessage(role="user", content="What is the capital of France?")
 ]
 
 response = llm.chat(messages)
