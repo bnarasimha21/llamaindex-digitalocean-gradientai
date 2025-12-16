@@ -60,10 +60,15 @@ def _parse_tool_arguments(arguments: Any) -> dict:
     return {}
 
 
-class DigitalOceanGradientAILLM(FunctionCallingLLM):
-    """DigitalOcean Gradient AI LLM wrapper built on the official SDK.
+class GradientAI(FunctionCallingLLM):
+    """DigitalOcean Gradient AI LLM.
     
     Supports function/tool calling similar to OpenAI's implementation.
+    
+    Example:
+        >>> from llama_index.llms.digitalocean.gradientai import GradientAI
+        >>> llm = GradientAI(model="openai-gpt-oss-120b", model_access_key="...")
+        >>> response = llm.complete("Hello!")
     """
 
     model: str

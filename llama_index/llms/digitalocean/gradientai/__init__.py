@@ -1,6 +1,8 @@
 """DigitalOcean Gradient AI LLM integration for LlamaIndex."""
 
-from llama_index.llms.digitalocean.gradientai.base import DigitalOceanGradientAILLM
+from llama_index.llms.digitalocean.gradientai.base import GradientAI
 
-__all__ = ["DigitalOceanGradientAILLM"]
+# Backward compatibility alias
+DigitalOceanGradientAILLM = GradientAI
 
+__all__ = ["GradientAI", "DigitalOceanGradientAILLM"]

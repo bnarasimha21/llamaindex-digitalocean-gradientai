@@ -15,9 +15,9 @@ This package uses the official [gradient](https://github.com/digitalocean/gradie
 ### Basic Usage
 
 ```python
-from llama_index.llms.digitalocean.gradientai import DigitalOceanGradientAILLM
+from llama_index.llms.digitalocean.gradientai import GradientAI
 
-llm = DigitalOceanGradientAILLM(
+llm = GradientAI(
     model="openai-gpt-oss-120b",
     model_access_key="your-api-key",
     workspace_id="your-workspace-id"  # Optional
@@ -31,9 +31,9 @@ print(response.text)
 
 ```python
 from llama_index.core.llms import ChatMessage
-from llama_index.llms.digitalocean.gradientai import DigitalOceanGradientAILLM
+from llama_index.llms.digitalocean.gradientai import GradientAI
 
-llm = DigitalOceanGradientAILLM(
+llm = GradientAI(
     model="openai-gpt-oss-120b",
     model_access_key="your-api-key",
 )
@@ -50,9 +50,9 @@ print(response.message.content)
 ### Streaming
 
 ```python
-from llama_index.llms.digitalocean.gradientai import DigitalOceanGradientAILLM
+from llama_index.llms.digitalocean.gradientai import GradientAI
 
-llm = DigitalOceanGradientAILLM(
+llm = GradientAI(
     model="meta-llama-3-70b-instruct",
     model_access_key="your-api-key",
 )
@@ -66,10 +66,10 @@ for chunk in llm.stream_complete("Tell me a story about AI:"):
 
 ```python
 import asyncio
-from llama_index.llms.digitalocean.gradientai import DigitalOceanGradientAILLM
+from llama_index.llms.digitalocean.gradientai import GradientAI
 
 async def main():
-    llm = DigitalOceanGradientAILLM(
+    llm = GradientAI(
         model="meta-llama-3-70b-instruct",
         model_access_key="your-api-key",
     )
@@ -86,7 +86,7 @@ This integration supports OpenAI-compatible function calling, enabling the LLM t
 #### Using `chat_with_tools`
 
 ```python
-from llama_index.llms.digitalocean.gradientai import DigitalOceanGradientAILLM
+from llama_index.llms.digitalocean.gradientai import GradientAI
 from llama_index.core.tools import FunctionTool
 
 # Define tools
@@ -104,7 +104,7 @@ multiply_tool = FunctionTool.from_defaults(fn=multiply)
 tools = [add_tool, multiply_tool]
 
 # Initialize LLM
-llm = DigitalOceanGradientAILLM(
+llm = GradientAI(
     model="openai-gpt-oss-120b",
     model_access_key="your-api-key",
 )
@@ -130,7 +130,7 @@ for tool_call in tool_calls:
 For automatic tool execution and result handling:
 
 ```python
-from llama_index.llms.digitalocean.gradientai import DigitalOceanGradientAILLM
+from llama_index.llms.digitalocean.gradientai import GradientAI
 from llama_index.core.tools import FunctionTool
 
 def add(a: int, b: int) -> int:
@@ -139,7 +139,7 @@ def add(a: int, b: int) -> int:
 
 add_tool = FunctionTool.from_defaults(fn=add)
 
-llm = DigitalOceanGradientAILLM(
+llm = GradientAI(
     model="openai-gpt-oss-120b",
     model_access_key="your-api-key",
 )
@@ -156,7 +156,7 @@ print(response)  # Output: 25
 
 ```python
 import asyncio
-from llama_index.llms.digitalocean.gradientai import DigitalOceanGradientAILLM
+from llama_index.llms.digitalocean.gradientai import GradientAI
 from llama_index.core.tools import FunctionTool
 
 def multiply(a: int, b: int) -> int:
@@ -166,7 +166,7 @@ def multiply(a: int, b: int) -> int:
 multiply_tool = FunctionTool.from_defaults(fn=multiply)
 
 async def main():
-    llm = DigitalOceanGradientAILLM(
+    llm = GradientAI(
         model="openai-gpt-oss-120b",
         model_access_key="your-api-key",
     )

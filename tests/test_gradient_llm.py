@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 from llama_index.core.base.llms.types import ChatMessage
 from llama_index.core.tools import FunctionTool
-from llama_index.llms.digitalocean.gradientai import DigitalOceanGradientAILLM
+from llama_index.llms.digitalocean.gradientai import GradientAI
 
 load_dotenv()
 REQUIRED_ENV = "MODEL_ACCESS_KEY"
@@ -35,7 +35,7 @@ def _make_llm():
     model = os.getenv("GRADIENT_MODEL", "openai-gpt-oss-120b")
     api_key = os.environ[REQUIRED_ENV]
     workspace_id = os.getenv("GRADIENT_WORKSPACE_ID")
-    return DigitalOceanGradientAILLM(
+    return GradientAI(
         model=model,
         model_access_key=api_key,
         workspace_id=workspace_id,
