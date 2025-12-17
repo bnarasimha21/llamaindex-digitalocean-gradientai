@@ -199,7 +199,7 @@ your_project/
 ```python
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, Settings
 from llama_index.llms.digitalocean.gradientai import GradientAI
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from llama_index.embeddings.fastembed import FastEmbedEmbedding
 
 # Initialize the DigitalOcean Gradient AI LLM
 llm = GradientAI(
@@ -207,8 +207,8 @@ llm = GradientAI(
     model_access_key="your-api-key",
 )
 
-# Use HuggingFace embeddings (runs locally, no additional API key needed)
-embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
+# Use FastEmbed embeddings (lightweight, runs locally, no API key needed)
+embed_model = FastEmbedEmbedding(model_name="BAAI/bge-small-en-v1.5")
 
 # Configure LlamaIndex settings
 Settings.llm = llm
@@ -225,7 +225,7 @@ response = query_engine.query("Your question about the documents?")
 print(response)
 ```
 
-> **Note:** Install the HuggingFace embeddings package: `pip install llama-index-embeddings-huggingface`
+> **Note:** Install the FastEmbed embeddings package: `pip install fastembed`
 >
 > `SimpleDirectoryReader` supports many file types including `.txt`, `.pdf`, `.docx`, `.csv`, `.md`, and more.
 
