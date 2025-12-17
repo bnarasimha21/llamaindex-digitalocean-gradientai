@@ -179,22 +179,55 @@ async def main():
 asyncio.run(main())
 ```
 
-## Package Structure
+### RAG (Retrieval-Augmented Generation)
+
+Use GradientAI with LlamaIndex's RAG capabilities to query your own documents.
+
+**Setup:** Create a `data/` folder and add your text files (`.txt`, `.pdf`, `.docx`, etc.):
 
 ```
-llama-index-llms-digitalocean-gradientai/
-├── llama_index/
-│   └── llms/
-│       └── digitalocean/
-│           └── gradientai/
-│               ├── __init__.py
-│               └── base.py
-├── tests/
-│   └── test_gradient_llm.py
-├── pyproject.toml
-├── README.md
-└── LICENSE
+your_project/
+├── data/
+│   ├── document1.txt
+│   ├── document2.pdf
+│   └── ...
+└── rag_example.py
 ```
+
+**Example:**
+
+```python
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, Settings
+from llama_index.llms.digitalocean.gradientai import GradientAI
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+
+# Initialize the DigitalOcean Gradient AI LLM
+llm = GradientAI(
+    model="openai-gpt-oss-120b",
+    model_access_key="your-api-key",
+)
+
+# Use HuggingFace embeddings (runs locally, no additional API key needed)
+embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
+
+# Configure LlamaIndex settings
+Settings.llm = llm
+Settings.embed_model = embed_model
+
+# Load documents and build index
+documents = SimpleDirectoryReader("data").load_data()
+index = VectorStoreIndex.from_documents(documents)
+
+# Query index
+query_engine = index.as_query_engine()
+response = query_engine.query("Your question about the documents?")
+
+print(response)
+```
+
+> **Note:** Install the HuggingFace embeddings package: `pip install llama-index-embeddings-huggingface`
+>
+> `SimpleDirectoryReader` supports many file types including `.txt`, `.pdf`, `.docx`, `.csv`, `.md`, and more.
 
 ## License
 
