@@ -13,7 +13,7 @@ setup(
     description="LlamaIndex integration for DigitalOcean Gradient AI",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/bnarasimha21/llamaindex-digitalocean-gradientai",
+    url="https://github.com/digitalocean/llamaindex-gradientai",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",

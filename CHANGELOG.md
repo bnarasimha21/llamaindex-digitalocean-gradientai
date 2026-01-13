@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Environment variable configuration support
 - Full integration with LlamaIndex core framework
 
-[Unreleased]: https://github.com/bnarasimha21/llamaindex-digitalocean-gradientai/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/bnarasimha21/llamaindex-digitalocean-gradientai/releases/tag/v0.1.0
+[Unreleased]: https://github.com/digitalocean/llamaindex-gradientai/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/digitalocean/llamaindex-gradientai/releases/tag/v0.1.0
 
 

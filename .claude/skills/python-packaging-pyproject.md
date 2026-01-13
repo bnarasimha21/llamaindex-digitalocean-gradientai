@@ -114,10 +114,10 @@ pip install -e ".[dev]"
 
 ```toml
 [project.urls]
-Homepage = "https://github.com/bnarasimha21/llamaindex-digitalocean-gradientai"
-Documentation = "https://github.com/bnarasimha21/llamaindex-digitalocean-gradientai#readme"
-Repository = "https://github.com/bnarasimha21/llamaindex-digitalocean-gradientai"
-Issues = "https://github.com/bnarasimha21/llamaindex-digitalocean-gradientai/issues"
+Homepage = "https://github.com/digitalocean/llamaindex-gradientai"
+Documentation = "https://github.com/digitalocean/llamaindex-gradientai#readme"
+Repository = "https://github.com/digitalocean/llamaindex-gradientai"
+Issues = "https://github.com/digitalocean/llamaindex-gradientai/issues"
 ```
 
 ## Package Discovery

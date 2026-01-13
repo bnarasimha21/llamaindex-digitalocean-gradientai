@@ -6,8 +6,8 @@ Thank you for your interest in contributing! This document provides guidelines a
 
 1. **Fork and clone the repository:**
    ```bash
-   git clone https://github.com/your-username/llama-index-llms-digitalocean-gradientai.git
-   cd llama-index-llms-digitalocean-gradientai
+   git clone https://github.com/your-username/llamaindex-gradientai.git
+   cd llamaindex-gradientai
    ```
 
 2. **Create a virtual environment:**
