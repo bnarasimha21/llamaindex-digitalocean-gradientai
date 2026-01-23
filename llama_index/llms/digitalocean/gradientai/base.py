@@ -1,6 +1,7 @@
 """Base DigitalOcean Gradient AI LLM implementation."""
 
 import json
+from importlib.metadata import version as get_package_version
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Union
 
 from llama_index.core.base.llms.types import (
@@ -30,6 +31,14 @@ except ImportError as exc:  # pragma: no cover - surfaced at runtime for users
     raise ImportError(
         "gradient is required for GradientLLM. Install with: pip install gradient"
     ) from exc
+
+# Package metadata for user agent tracking
+PACKAGE_NAME = "llama-index-llms-digitalocean-gradientai"
+try:
+    PACKAGE_VERSION = get_package_version(PACKAGE_NAME)
+except Exception:
+    # Fallback if package is not installed (e.g., during development)
+    PACKAGE_VERSION = "0.0.0"
 
 
 def _resolve_tool_choice(
@@ -61,9 +70,9 @@ def _parse_tool_arguments(arguments: Any) -> dict:
 
 class GradientAI(FunctionCallingLLM):
     """DigitalOcean Gradient AI LLM.
-    
+
     Supports function/tool calling similar to OpenAI's implementation.
-    
+
     Example:
         >>> from llama_index.llms.digitalocean.gradientai import GradientAI
         >>> llm = GradientAI(model="openai-gpt-oss-120b", model_access_key="...")
@@ -96,7 +105,7 @@ class GradientAI(FunctionCallingLLM):
         **kwargs: Any,
     ) -> None:
         """Initialize DigitalOcean Gradient AI LLM.
-        
+
         Args:
             model: Model name/identifier.
             model_access_key: API key for authentication (required).
@@ -142,6 +151,8 @@ class GradientAI(FunctionCallingLLM):
             model_access_key=self.model_access_key,
             base_url=self.base_url,
             timeout=self.timeout,
+            user_agent_package=PACKAGE_NAME,
+            user_agent_version=PACKAGE_VERSION,
         )
 
     @property
@@ -151,6 +162,8 @@ class GradientAI(FunctionCallingLLM):
             model_access_key=self.model_access_key,
             base_url=self.base_url,
             timeout=self.timeout,
+            user_agent_package=PACKAGE_NAME,
+            user_agent_version=PACKAGE_VERSION,
         )
 
     def _format_messages(self, messages: Sequence[ChatMessage]) -> List[Dict[str, Any]]:
@@ -159,18 +172,16 @@ class GradientAI(FunctionCallingLLM):
         for msg in messages:
             role = msg.role.value if hasattr(msg.role, "value") else str(msg.role)
             message_dict: Dict[str, Any] = {"role": role}
-            
+
             # Extract content and tool calls from blocks
             if hasattr(msg, "blocks") and msg.blocks:
-                text_parts = [
-                    block.text for block in msg.blocks if isinstance(block, TextBlock)
-                ]
+                text_parts = [block.text for block in msg.blocks if isinstance(block, TextBlock)]
                 content = "".join(text_parts) if text_parts else None
-                
+
                 tool_call_blocks = [
                     block for block in msg.blocks if isinstance(block, ToolCallBlock)
                 ]
-                
+
                 if tool_call_blocks:
                     message_dict["tool_calls"] = [
                         {
@@ -178,21 +189,23 @@ class GradientAI(FunctionCallingLLM):
                             "type": "function",
                             "function": {
                                 "name": block.tool_name,
-                                "arguments": json.dumps(block.tool_kwargs) 
-                                    if isinstance(block.tool_kwargs, dict) 
-                                    else str(block.tool_kwargs or "{}"),
-                            }
+                                "arguments": (
+                                    json.dumps(block.tool_kwargs)
+                                    if isinstance(block.tool_kwargs, dict)
+                                    else str(block.tool_kwargs or "{}")
+                                ),
+                            },
                         }
                         for block in tool_call_blocks
                     ]
-                
+
                 if content:
                     message_dict["content"] = content
                 elif not tool_call_blocks:
                     message_dict["content"] = ""
             else:
                 message_dict["content"] = msg.content or ""
-            
+
             formatted.append(message_dict)
         return formatted
 
@@ -213,13 +226,13 @@ class GradientAI(FunctionCallingLLM):
             payload["messages"] = self._format_messages(messages)
         else:
             payload["messages"] = [{"role": "user", "content": prompt}]
-        
+
         # Add tools if provided
         if "tools" in kwargs and kwargs["tools"]:
             payload["tools"] = kwargs["tools"]
         if "tool_choice" in kwargs and kwargs["tool_choice"]:
             payload["tool_choice"] = kwargs["tool_choice"]
-        
+
         return payload
 
     def _to_chat_message(self, message: Any) -> ChatMessage:
@@ -231,7 +244,7 @@ class GradientAI(FunctionCallingLLM):
             role = message.get("role", "assistant")
         else:
             role = "assistant"
-        
+
         # Extract content
         if hasattr(message, "content"):
             content = message.content
@@ -239,12 +252,12 @@ class GradientAI(FunctionCallingLLM):
             content = message.get("content")
         else:
             content = None
-        
+
         # Build blocks list
         blocks = []
         if content:
             blocks.append(TextBlock(text=content))
-        
+
         # Extract tool calls (handle both object attributes and dict access)
         if hasattr(message, "tool_calls"):
             tool_calls = message.tool_calls or []
@@ -252,7 +265,7 @@ class GradientAI(FunctionCallingLLM):
             tool_calls = message.get("tool_calls") or []
         else:
             tool_calls = []
-        
+
         for tool_call in tool_calls:
             # Extract tool call fields
             if hasattr(tool_call, "id"):
@@ -267,7 +280,7 @@ class GradientAI(FunctionCallingLLM):
                 tool_args = func.get("arguments", "{}")
             else:
                 continue
-            
+
             blocks.append(
                 ToolCallBlock(
                     tool_call_id=tool_id,
@@ -275,7 +288,7 @@ class GradientAI(FunctionCallingLLM):
                     tool_kwargs=_parse_tool_arguments(tool_args),
                 )
             )
-        
+
         if blocks:
             return ChatMessage(role=role, blocks=blocks)
         return ChatMessage(role=role, content=content or "")
@@ -285,9 +298,9 @@ class GradientAI(FunctionCallingLLM):
         try:
             if not hasattr(completion, "choices") or not completion.choices:
                 return ""
-            
+
             choice = completion.choices[0]
-            
+
             # Try delta first (streaming format)
             delta = getattr(choice, "delta", None)
             if delta is not None:
@@ -295,7 +308,7 @@ class GradientAI(FunctionCallingLLM):
                     return delta.content or ""
                 if isinstance(delta, dict):
                     return delta.get("content", "")
-            
+
             # Fallback to message (non-streaming format)
             message = getattr(choice, "message", None)
             if message is not None:
@@ -303,7 +316,7 @@ class GradientAI(FunctionCallingLLM):
                     return message.content or ""
                 if isinstance(message, dict):
                     return message.get("content", "")
-            
+
             return ""
         except Exception:
             return ""
@@ -389,7 +402,7 @@ class GradientAI(FunctionCallingLLM):
             if delta:
                 text += delta
                 yield ChatResponse(message=ChatMessage(role="assistant", content=text), delta=delta)
-    
+
     def _prepare_chat_with_tools(
         self,
         tools: Sequence["BaseTool"],
@@ -402,7 +415,7 @@ class GradientAI(FunctionCallingLLM):
         **kwargs: Any,
     ) -> Dict[str, Any]:
         """Prepare chat request with tools for function calling.
-        
+
         Args:
             tools: Sequence of tools available for the LLM to call.
             user_msg: User message (string or ChatMessage).
@@ -412,33 +425,35 @@ class GradientAI(FunctionCallingLLM):
             tool_required: If True, LLM must call a tool.
             tool_choice: Specific tool choice ("auto", "required", "none", or tool name).
             **kwargs: Additional arguments passed to chat.
-            
+
         Returns:
             Dict of arguments ready for the chat method.
         """
         # Convert tools to OpenAI-compatible format
-        tool_specs = [
-            tool.metadata.to_openai_tool(skip_length_check=True) for tool in tools
-        ] if tools else []
-        
+        tool_specs = (
+            [tool.metadata.to_openai_tool(skip_length_check=True) for tool in tools]
+            if tools
+            else []
+        )
+
         # Build messages list (copy to avoid mutation)
         messages: List[ChatMessage] = list(chat_history) if chat_history else []
-        
+
         # Add user message
         if user_msg is not None:
             if isinstance(user_msg, str):
                 messages.append(ChatMessage(role=MessageRole.USER, content=user_msg))
             else:
                 messages.append(user_msg)
-        
+
         result: Dict[str, Any] = {"messages": messages, **kwargs}
-        
+
         if tool_specs:
             result["tools"] = tool_specs
             result["tool_choice"] = _resolve_tool_choice(tool_choice, tool_required)
-        
+
         return result
-    
+
     def _validate_chat_with_tools_response(
         self,
         response: ChatResponse,
@@ -449,22 +464,20 @@ class GradientAI(FunctionCallingLLM):
         """Validate and optionally limit tool calls in response."""
         if allow_parallel_tool_calls:
             return response
-        
+
         tool_call_blocks = [
-            block for block in response.message.blocks 
-            if isinstance(block, ToolCallBlock)
+            block for block in response.message.blocks if isinstance(block, ToolCallBlock)
         ]
-        
+
         if len(tool_call_blocks) > 1:
             # Keep only the first tool call
             non_tool_blocks = [
-                block for block in response.message.blocks 
-                if not isinstance(block, ToolCallBlock)
+                block for block in response.message.blocks if not isinstance(block, ToolCallBlock)
             ]
             response.message.blocks = non_tool_blocks + [tool_call_blocks[0]]
-        
+
         return response
-    
+
     def get_tool_calls_from_response(
         self,
         response: ChatResponse,
@@ -472,24 +485,23 @@ class GradientAI(FunctionCallingLLM):
         **kwargs: Any,
     ) -> List[ToolSelection]:
         """Extract tool calls from the LLM response.
-        
+
         Args:
             response: The chat response from the LLM.
             error_on_no_tool_call: Raise error if no tool calls found.
             **kwargs: Additional arguments (unused).
-            
+
         Returns:
             List of ToolSelection objects representing the tool calls.
-            
+
         Raises:
             ValueError: If error_on_no_tool_call is True and no tools were called.
         """
         # Primary path: extract from ToolCallBlock in message blocks
         tool_call_blocks = [
-            block for block in response.message.blocks
-            if isinstance(block, ToolCallBlock)
+            block for block in response.message.blocks if isinstance(block, ToolCallBlock)
         ]
-        
+
         if tool_call_blocks:
             return [
                 ToolSelection(
@@ -499,15 +511,15 @@ class GradientAI(FunctionCallingLLM):
                 )
                 for block in tool_call_blocks
             ]
-        
+
         # Fallback: check additional_kwargs (backward compatibility)
         legacy_tool_calls = response.message.additional_kwargs.get("tool_calls") or []
-        
+
         if not legacy_tool_calls:
             if error_on_no_tool_call:
                 raise ValueError("Expected at least one tool call, but got 0 tool calls.")
             return []
-        
+
         tool_selections = []
         for tc in legacy_tool_calls:
             if isinstance(tc, dict):
@@ -520,7 +532,7 @@ class GradientAI(FunctionCallingLLM):
                 func = getattr(tc, "function", None)
                 tool_name = getattr(func, "name", "") if func else ""
                 arguments = getattr(func, "arguments", "{}") if func else "{}"
-            
+
             tool_selections.append(
                 ToolSelection(
                     tool_id=tool_id,
@@ -528,6 +540,5 @@ class GradientAI(FunctionCallingLLM):
                     tool_kwargs=_parse_tool_arguments(arguments),
                 )
             )
-        
-        return tool_selections
 
+        return tool_selections
